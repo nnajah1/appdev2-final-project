@@ -22,8 +22,9 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        Post::factory()->count(10)->create();
-        Comment::factory()->count(10)->create();
-        Like::factory()->count(10)->create();
+        Post::factory()->count(5)->create();
+        Comment::factory()->count(5)->create();
+        Like::factory()->count(5)->create();
+        
     }
 }

@@ -17,12 +17,14 @@ class likeFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => function () {
+           'user_id' => function () {
                 return \App\Models\User::factory()->create()->id;
             },
+            'user_name' => $this->faker->name(),
             'post_id' => function () {
                 return \App\Models\Post::factory()->create()->id;
             },
+            'post_user_name' => $this->faker->name(),
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];
     }

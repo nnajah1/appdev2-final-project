@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Like;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Post;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -23,12 +25,17 @@ class LikeController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
+        $user = Auth::user();
+        $validated = $request->validate([
             'post_id' => 'required|exists:posts,id',
         ]);
-
-        $like = Like::create($request->all());
+        $post = Post::with('user')->find($validated['post_id']);
+        $like = Like::create([
+            'user_id' => Auth::id(),
+            'user_name' => $user->name,
+            'post_id' => $validated['post_id'],
+            'post_user_name' =>  $post->user->name,
+        ]);
         return response()->json(['message' => 'Liked successfully', 'like' => $like], 201);
     }
 
@@ -46,9 +53,9 @@ class LikeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $like = Like::findOrFail($id);
-        $like->update($request->all());
-        return response()->json($like);
+        // $like = Like::findOrFail($id);
+        // $like->update($request->all());
+        // return response()->json($like);
     }
 
     /**

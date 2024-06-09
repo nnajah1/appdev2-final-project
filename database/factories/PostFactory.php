@@ -20,6 +20,7 @@ class PostFactory extends Factory
             'user_id' => function () {
                 return \App\Models\User::factory()->create()->id;
             },
+            'post_user_name' => $this->faker->name(),
             'content' => $this->faker->paragraph(),
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
