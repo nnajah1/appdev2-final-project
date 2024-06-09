@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Http\Requests\LikeRequest;
 use App\Models\Like;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Post;
@@ -23,19 +23,17 @@ class LikeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(LikeRequest $request)
     {
         $user = Auth::user();
-        $validated = $request->validate([
-            'post_id' => 'required|exists:posts,id',
-        ]);
-        $post = Post::with('user')->find($validated['post_id']);
+        $post = Post::with('user')->find($request->validated()['post_id']);
         $like = Like::create([
             'user_id' => Auth::id(),
             'user_name' => $user->name,
-            'post_id' => $validated['post_id'],
+            'post_id' => $request->validated()['post_id'],
             'post_user_name' =>  $post->user->name,
         ]);
+        
         return response()->json(['message' => 'Liked successfully', 'like' => $like], 201);
     }
 

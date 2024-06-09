@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Http\Requests\PostRequest;
 use App\Models\Post;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -19,20 +19,15 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
-    public function store(Request $request)
-    {   $user = Auth::user();
-        $validated = $request->validate([
-            'content' => ['required', 'string'],
-        ]);
-        
-       
+    public function store(PostRequest $request)
+    {   
+        $user = Auth::user();
         $post = Post::create([
             
             'user_id' => Auth::id(),
             'post_user_name' => $user->name,
-            'content' => $validated['content'],
+            'content' => $request->validated()['content'],
         ]);
-        
         return response()->json(['message' => 'Post created successfully', 'post' => $post], 201);
     }
 
@@ -41,21 +36,18 @@ class PostController extends Controller
         return response()->json($post->load('user', 'comments', 'likes'));
     }
 
-    public function update(Request $request, Post $post)
+    public function update(PostRequest $request, Post $post)
     {
         $user = Auth::user();
-        $validated = $request->validate([
-            'content' => ['required', 'string'],
-        ]);
     
         if ($post->user_id !== Auth::id()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        
-        $post->post_user_name = $user->name;
-        $post->content = $validated['content'];
-        $post->save();
-        
+        $post = $post->update([
+            $post->post_user_name = $user->name,
+            $post->content = $request->validated()['content'],
+        ]);
+
         return response()->json(['message' => 'Post updated successfully', 'post' => $post]);
     }
 
