@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Http\Requests\StoreCommentRequest;
+use App\Http\Requests\UpdateCommentRequest;
 use App\Models\Comment;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
@@ -22,15 +23,15 @@ class CommentController extends Controller
     public function store(StoreCommentRequest $request)
     {
         $user = Auth::user();
-
+        $validated = $request->validated();
         
-        $post = Post::with('user')->find($request->validated()['post_id']);
+        $post = Post::with('user')->find($validated['post_id']);
         $comment = Comment::create([
             'user_id' => Auth::id(),
             'user_name' => $user->name,
-            'post_id' => $request->validated()['post_id'],
+            'post_id' => $validated['post_id'],
             'post_user_name' =>  $post->user->name,
-            'content' => $request->validated()['content'],
+            'content' =>$validated['content'],
         ]);
 
         return response()->json(['message' => 'Comment created successfully', 'comment' => $comment], 201);
@@ -41,18 +42,19 @@ class CommentController extends Controller
         return response()->json($comment->load('user', 'post'));
     }
 
-    public function update(StoreCommentRequest $request, Comment $comment)
+    public function update(UpdateCommentRequest $request, Comment $comment)
     {
+        $validated = $request->validated();
+
         if ($comment->user_id !== Auth::id()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
         $comment = $comment->update([
             $post = Post::with('user')->find($comment->post_id),
             $comment->post_user_name = $post->user->name,
-            $comment->content = $request->validated()['content'],
+            $comment->content = $validated['content'],
         ]);
         
-
         return response()->json(['message' => 'Comment updated successfully', 'comment' => $comment]);
     }
 

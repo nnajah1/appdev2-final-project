@@ -22,11 +22,12 @@ class PostController extends Controller
     public function store(PostRequest $request)
     {   
         $user = Auth::user();
+        $validated = $request->validated();
         $post = Post::create([
             
             'user_id' => Auth::id(),
             'post_user_name' => $user->name,
-            'content' => $request->validated()['content'],
+            'content' => $validated['content'],
         ]);
         return response()->json(['message' => 'Post created successfully', 'post' => $post], 201);
     }
@@ -39,13 +40,13 @@ class PostController extends Controller
     public function update(PostRequest $request, Post $post)
     {
         $user = Auth::user();
-    
+        $validated = $request->validated();
         if ($post->user_id !== Auth::id()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
         $post = $post->update([
             $post->post_user_name = $user->name,
-            $post->content = $request->validated()['content'],
+            $post->content = $validated['content'],
         ]);
 
         return response()->json(['message' => 'Post updated successfully', 'post' => $post]);

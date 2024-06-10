@@ -24,13 +24,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::post('/register', [UserController::class, 'store']);
-Route::post('/login', [UserController::class, 'login']);
+Route::post('register', [UserController::class, 'store']);
+Route::post('login', [UserController::class, 'login']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('/users', UserController::class);
-    Route::apiResource('/posts', PostController::class);
-    Route::apiResource('/comments', CommentController::class);
-    Route::apiResource('/likes', LikeController::class);
+    Route::apiResource('users', UserController::class);
+    Route::apiResource('posts', PostController::class);
+    Route::apiResource('comments', CommentController::class);
+    Route::apiResource('likes', LikeController::class);
+    Route::post('logout', [UserController::class, 'logout']);
 });

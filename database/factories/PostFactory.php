@@ -1,7 +1,7 @@
 <?php
 
 namespace Database\Factories;
-
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,9 +18,11 @@ class PostFactory extends Factory
     {
         return [
             'user_id' => function () {
-                return \App\Models\User::factory()->create()->id;
+                return User::factory()->create()->id;
             },
-            'post_user_name' => $this->faker->name(),
+            'post_user_name' => function (array $attributes) {
+                return User::find($attributes['user_id'])->name;
+            },
             'content' => $this->faker->paragraph(),
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
