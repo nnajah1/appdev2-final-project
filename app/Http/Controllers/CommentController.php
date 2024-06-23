@@ -49,10 +49,15 @@ class CommentController extends Controller
         if ($comment->user_id !== Auth::id()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        $comment = $comment->update([
-            $post = Post::with('user')->find($comment->post_id),
-            $comment->post_user_name = $post->user->name,
-            $comment->content = $validated['content'],
+    
+        $post = Post::with('user')->find($comment->post_id);
+        if (!$post) {
+            return response()->json(['error' => 'Post not found'], 404);
+        }
+        
+        $comment->update([
+            'post_user_name' => $post->user->name,
+            'content' => $validated['content'],
         ]);
         
         return response()->json(['message' => 'Comment updated successfully', 'comment' => $comment]);

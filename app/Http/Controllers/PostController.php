@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Http\Requests\PostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -37,16 +38,16 @@ class PostController extends Controller
         return response()->json($post->load('user', 'comments', 'likes'));
     }
 
-    public function update(PostRequest $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post)
     {
         $user = Auth::user();
         $validated = $request->validated();
         if ($post->user_id !== Auth::id()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        $post = $post->update([
-            $post->post_user_name = $user->name,
-            $post->content = $validated['content'],
+        $post->update([
+            'post_user_name' => $user->name,
+            'content' => $validated['content'],
         ]);
 
         return response()->json(['message' => 'Post updated successfully', 'post' => $post]);

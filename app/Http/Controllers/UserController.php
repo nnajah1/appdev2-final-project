@@ -41,6 +41,9 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        if ($user->id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
         $user = $user->update([
             'name' => $request->name
         ]);
